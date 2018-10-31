@@ -1,11 +1,13 @@
-from enum import Enum
+import os
 
 
-class Configuration(Enum):
+class Configuration:
     minimum_life_of_species = 8  # A species gets this amount of iterations to improve.
     minimum_improvement_of_species = 0.02  # A species is discarded if the relative difference in improvement over the second half of it's lifetime is more than this.
     max_number_of_generations = 1000  # This is to stop thing for going on forever and ever...
     success_fitness = 4000  # If an organism achieves this fitness the training end and the organism id returned, this has to be adapted to fit the game score.
+
+    number_organisms_per_specie = 40
 
     probability_for_mutation_type = [0.05, 0.1, 0.65, 0.2]  # [NewNeuron, NewAxon, IncreasedAxonInfluence, ChangeAxonActivity]
 
@@ -17,4 +19,5 @@ class Configuration(Enum):
 
     axon_change_factor = 1.05  # Factor of change for IncreasedAxonInfluence
 
-
+    run_on_multiple_cores = True
+    number_of_cores = os.cpu_count() - 2

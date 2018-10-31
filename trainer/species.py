@@ -1,14 +1,17 @@
+from multiprocessing.pool import Pool
+
 import numpy as np
 
 from tools.math_helpers import relative_difference_of
 from trainer.configuration import Configuration
+from trainer.organism import Organism
 
 
 class Species:
-    def __init__(self, organism):
+    def __init__(self, organism: Organism):
         self.age = 0
         self._historical_fitness = list()
-        self._goal_number_of_organisms = 40
+        self._goal_number_of_organisms = Configuration.number_organisms_per_specie
         self._organisms = [organism.clone() for _ in range(self._goal_number_of_organisms)]
 
     @property
@@ -20,7 +23,8 @@ class Species:
 
         for organism in self._organisms:
             organism.evaluate()
-            self._save_fitness()
+
+        self._save_fitness()
 
         self._sort_by_fitness(self._organisms)
         self._organisms = self._remove_poorest_organisms(self._organisms)
@@ -36,7 +40,10 @@ class Species:
 
         self._organisms = self._remove_organisms(new_species)
 
-        return new_species
+        if Configuration.run_on_multiple_cores:
+            return [self] + new_species
+        else:
+            return new_species
 
     def has_stopped_evolving(self):
         evolution_limit = Configuration.minimum_life_of_species

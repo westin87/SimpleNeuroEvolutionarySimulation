@@ -1,8 +1,17 @@
+from datetime import datetime
+
+import numpy as np
+from multiprocessing.pool import Pool
+
 from neural_network.brain import Brain
 from trainer.configuration import Configuration
 from trainer.organism import Organism
 from trainer.species import Species
 from trainer.task import Task
+
+
+def evolve(s):
+    return s.evolve()
 
 
 class SNET:
@@ -14,15 +23,36 @@ class SNET:
 
     def train(self) -> Organism:
         while self.generation < Configuration.max_number_of_generations:
+            start = datetime.now()
             self.generation += 1
-            print("=" * 10 + f"Generation: {self.generation}" + "=" * 10)
+            print("=" * 10 + f" Generation: {self.generation} - {start.isoformat()} " + "=" * 10)
 
-            new_speciess = list()
-            for species in self._speciess:
-                new_speciess += species.evolve()
-            self._speciess += new_speciess
+            if Configuration.run_on_multiple_cores:
+                print(f"Running on {Configuration.number_of_cores} cores.")
+                pool = Pool(Configuration.number_of_cores)
+
+                spiciess_list = pool.map(evolve, self._speciess)
+                pool.close()
+                pool.join()
+
+                self._speciess = []
+                number_of_new_species = 0
+                for spiciess in spiciess_list:
+                    self._speciess += spiciess
+                    number_of_new_species += len(spiciess) - 1
+
+                print(f"Adding {number_of_new_species} species.")
+
+            else:
+                new_speciess = list()
+                for species in self._speciess:
+                    new_speciess += species.evolve()
+
+                print(f"Adding {len(new_speciess)} speciess.")
+                self._speciess += new_speciess
 
             self._kill_speciess_that_have_stoped_evolving()
+
 
             if self._all_speciess_has_been_extinct():
                 print("All species's has become extinct. Ether increase probability "
@@ -32,6 +62,10 @@ class SNET:
             best_organism = self._get_best_organism()
             print(f"Current best organism: {best_organism}")
             print(f"Number of species in next iteration: {len(self._speciess)}")
+
+            end = datetime.now()
+            print("-" * 10 + f" Elapsed time: {(end-start).total_seconds()} [s] " + "-" * 10)
+
             if best_organism.fitness > Configuration.success_fitness:
                 break
 
@@ -46,6 +80,7 @@ class SNET:
         self._remove_speciess(speciess_to_delete)
 
     def _remove_speciess(self, speciess):
+        print(f"Discarding {len(speciess)} speciess.")
         self._speciess = [species for species in self._speciess if not species in speciess]
 
     def _get_best_organism(self):

@@ -6,4 +6,4 @@ def sigmoid(x):
 
 
 def relative_difference_of(first: int, second: int) -> float:
-    return np.abs(first - second) / np.max([first, second])
+    return np.abs(first - second) / (np.max([first, second]) + np.finfo(np.float32).eps)
