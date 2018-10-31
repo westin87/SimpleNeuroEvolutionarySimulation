@@ -15,6 +15,7 @@ from neural_network.output_neuron import OutputNeuron
 from neural_network.hidden_neuron import HiddenNeuron
 from neural_network.input_neuron import InputNeuron
 from tools.point import Point
+from trainer.configuration import Configuration
 
 
 class Brain:
@@ -42,13 +43,20 @@ class Brain:
         mutation = self._get_random_mutation()
 
         if mutation == Mutation.NewNeuron:
-            number_of_neurons = choice([1, 2, 3, 4], p=[0.9, 0.05, 0.04, 0.01])
+            number_of_neurons = choice(
+                Configuration.number_of_new_neurons_in_mutation,
+                p=Configuration.probability_for_new_neurons)
             self._add_neurons(number_of_neurons)
-        elif mutation == Mutation.NewConnection:
-            number_of_axons = choice([1, 2, 3, 4, 5], p=[0.8, 0.1, 0.05, 0.04, 0.01])
+
+        elif mutation == Mutation.NewAxon:
+            number_of_axons = choice(
+                Configuration.number_of_new_axons_in_mutation,
+                p=Configuration.probability_for_new_axons)
             self._add_axons(number_of_axons)
+
         elif mutation == Mutation.IncreasedAxonInfluence:
             self._increase_influence_of_random_axon()
+
         elif mutation == Mutation.ChangeAxonActivity:
             self._change_influence_of_random_neuron()
 
@@ -134,7 +142,7 @@ class Brain:
     def _increase_influence_of_random_axon(self):
         axon = self._get_any_axon()
         if axon:
-            axon.weight *= 1.05
+            axon.weight *= Configuration.axon_change_factor
 
     def _change_influence_of_random_neuron(self):
         axon = self._get_any_axon()
@@ -159,7 +167,7 @@ class Brain:
     def _get_random_mutation(self):
         mutation_list = [
             Mutation.NewNeuron,
-            Mutation.NewConnection,
+            Mutation.NewAxon,
             Mutation.IncreasedAxonInfluence,
             Mutation.ChangeAxonActivity]
 
@@ -168,6 +176,6 @@ class Brain:
 
 class Mutation(Enum):
     NewNeuron = 1
-    NewConnection = 2
+    NewAxon = 2
     IncreasedAxonInfluence = 3
     ChangeAxonActivity = 4

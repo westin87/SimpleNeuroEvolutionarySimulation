@@ -1,6 +1,7 @@
 import numpy as np
 
 from tools.math_helpers import relative_difference_of
+from trainer.configuration import Configuration
 
 
 class Species:
@@ -38,14 +39,14 @@ class Species:
         return new_species
 
     def has_stopped_evolving(self):
-        evolution_limit = 8
-        if self.age < evolution_limit:
+        evolution_limit = Configuration.minimum_life_of_species
+        if self.age <= evolution_limit:
             return False
 
         max_fitness = np.max(self._historical_fitness[-evolution_limit//2:])
         min_fitness = np.min(self._historical_fitness[-evolution_limit:-evolution_limit//2])
 
-        return relative_difference_of(max_fitness, min_fitness) < 0.02
+        return relative_difference_of(max_fitness, min_fitness) < Configuration.minimum_improvement_of_species
 
     def get_best_organism(self):
         return self._organisms[0]
