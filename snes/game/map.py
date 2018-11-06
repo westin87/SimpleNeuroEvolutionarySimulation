@@ -1,6 +1,6 @@
 import numpy as np
 
-from tools.point import Point
+from snes.tools.point import Point
 
 
 class Map:

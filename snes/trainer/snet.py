@@ -1,13 +1,12 @@
 from datetime import datetime
 
-import numpy as np
 from multiprocessing.pool import Pool
 
-from neural_network.brain import Brain
-from trainer.configuration import Configuration
-from trainer.organism import Organism
-from trainer.species import Species
-from trainer.task import Task
+from snes.neural_network.brain import Brain
+from snes.trainer import Configuration
+from snes.trainer import Organism
+from snes.trainer import Species
+from snes.trainer import Task
 
 
 def evolve(s):

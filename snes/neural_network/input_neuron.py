@@ -1,6 +1,6 @@
-from neural_network.axon import Axon
-from neural_network.neuron import Neuron
-from tools.point import Point
+from snes.neural_network.axon import Axon
+from snes.neural_network.neuron import Neuron
+from snes.tools.point import Point
 
 
 class InputNeuron(Neuron):

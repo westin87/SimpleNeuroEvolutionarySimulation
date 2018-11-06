@@ -1,3 +1,4 @@
+import sys
 from copy import deepcopy
 from datetime import datetime
 from enum import Enum
@@ -9,13 +10,13 @@ import pickle
 from matplotlib import pyplot as plt
 from numpy.random import randn, choice
 
-from neural_network.axon import Axon
-from neural_network.neuron import Neuron
-from neural_network.output_neuron import OutputNeuron
-from neural_network.hidden_neuron import HiddenNeuron
-from neural_network.input_neuron import InputNeuron
-from tools.point import Point
-from trainer.configuration import Configuration
+from snes.neural_network.axon import Axon
+from snes.neural_network.input_neuron import InputNeuron
+from snes.neural_network.hidden_neuron import HiddenNeuron
+from snes.neural_network.neuron import Neuron
+from snes.neural_network.output_neuron import OutputNeuron
+from snes.tools.point import Point
+from snes.trainer.configuration import Configuration
 
 
 class Brain:

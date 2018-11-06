@@ -1,6 +1,7 @@
 #from game.game import Game
+from snes.trainer.snet import SNET
 from snake_game.game import Game
-from trainer.snet import SNET
+
 
 snet = SNET(Game())
 organism = snet.train()

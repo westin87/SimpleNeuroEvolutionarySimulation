@@ -1,10 +1,10 @@
 import numpy as np
 
-from neural_network.axon import Axon
-from neural_network.input_neuron import InputNeuron
-from neural_network.neuron import Neuron
-from tools.math_helpers import sigmoid
-from tools.point import Point
+from snes.neural_network.axon import Axon
+from snes.neural_network.input_neuron import InputNeuron
+from snes.neural_network.neuron import Neuron
+from snes.tools.math_helpers import sigmoid
+from snes.tools.point import Point
 
 
 class HiddenNeuron(Neuron):

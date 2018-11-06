@@ -1,10 +1,8 @@
-from multiprocessing.pool import Pool
-
 import numpy as np
 
-from tools.math_helpers import relative_difference_of
-from trainer.configuration import Configuration
-from trainer.organism import Organism
+from snes.tools import relative_difference_of
+from snes.trainer import Configuration
+from snes.trainer import Organism
 
 
 class Species:

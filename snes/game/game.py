@@ -1,8 +1,8 @@
 from numpy.random import choice
 
-from game.map import Map
-from tools.point import Point
-from trainer.task import Task
+from snes.game import Map
+from snes.tools.point import Point
+from snes.trainer import Task
 
 
 class Game(Task):
