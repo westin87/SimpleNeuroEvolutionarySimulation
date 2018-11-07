@@ -1,8 +1,8 @@
 import numpy as np
 
-from snes.tools import relative_difference_of
-from snes.trainer import Configuration
-from snes.trainer import Organism
+from snes.tools.math_helpers import relative_difference_of
+from snes.trainer.configuration import Configuration
+from snes.trainer.organism import Organism
 
 
 class Species:

@@ -1,6 +1,6 @@
 from snes.neural_network.brain import Brain
-from snes.tools import relative_difference_of
-from snes.trainer import Task
+from snes.tools.math_helpers import relative_difference_of
+from snes.trainer.task import Task
 
 
 class Organism:

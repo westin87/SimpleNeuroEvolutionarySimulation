@@ -8,6 +8,7 @@ class Configuration:
     success_fitness = 4000  # If an organism achieves this fitness the training end and the organism id returned, this has to be adapted to fit the game score.
 
     number_organisms_per_specie = 40
+    number_of_species = 40
 
     probability_for_mutation_type = [0.05, 0.1, 0.65, 0.2]  # [NewNeuron, NewAxon, IncreasedAxonInfluence, ChangeAxonActivity]
 

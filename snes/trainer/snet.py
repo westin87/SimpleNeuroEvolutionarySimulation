@@ -1,12 +1,13 @@
+import gc
 from datetime import datetime
 
 from multiprocessing.pool import Pool
 
 from snes.neural_network.brain import Brain
-from snes.trainer import Configuration
-from snes.trainer import Organism
-from snes.trainer import Species
-from snes.trainer import Task
+from snes.trainer.configuration import Configuration
+from snes.trainer.organism import Organism
+from snes.trainer.species import Species
+from snes.trainer.task import Task
 
 
 def evolve(s):
@@ -22,6 +23,8 @@ class SNET:
 
     def train(self) -> Organism:
         while self.generation < Configuration.max_number_of_generations:
+            gc.collect()
+
             start = datetime.now()
             self.generation += 1
             print("=" * 10 + f" Generation: {self.generation} - {start.isoformat()} " + "=" * 10)
@@ -38,9 +41,11 @@ class SNET:
                 number_of_new_species = 0
                 for spiciess in spiciess_list:
                     self._speciess += spiciess
+
                     number_of_new_species += len(spiciess) - 1
 
                 print(f"Adding {number_of_new_species} species.")
+
 
             else:
                 new_speciess = list()
@@ -50,13 +55,7 @@ class SNET:
                 print(f"Adding {len(new_speciess)} speciess.")
                 self._speciess += new_speciess
 
-            self._kill_speciess_that_have_stoped_evolving()
-
-
-            if self._all_speciess_has_been_extinct():
-                print("All species's has become extinct. Ether increase probability "
-                      "for new species's or lower limit for when to kill a species.")
-                return None
+            self._remove_lowest_ranking_species()
 
             best_organism = self._get_best_organism()
             print(f"Current best organism: {best_organism}")
@@ -70,17 +69,10 @@ class SNET:
 
         return best_organism
 
-    def _kill_speciess_that_have_stoped_evolving(self):
-        speciess_to_delete = list()
-        for species in self._speciess:
-            if species.has_stopped_evolving():
-                speciess_to_delete.append(species)
-
-        self._remove_speciess(speciess_to_delete)
-
-    def _remove_speciess(self, speciess):
-        print(f"Discarding {len(speciess)} speciess.")
-        self._speciess = [species for species in self._speciess if not species in speciess]
+    def _remove_lowest_ranking_species(self):
+        self._speciess.sort(key=lambda s: s.fitness, reverse=True)
+        print([s.fitness for s in self._speciess])
+        self._speciess = self._speciess[:Configuration.number_of_species]
 
     def _get_best_organism(self):
         self._speciess.sort(key=lambda s: s.fitness, reverse=True)
