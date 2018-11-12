@@ -41,7 +41,6 @@ class SNET:
                 number_of_new_species = 0
                 for spiciess in spiciess_list:
                     self._speciess += spiciess
-
                     number_of_new_species += len(spiciess) - 1
 
                 print(f"Adding {number_of_new_species} species.")
@@ -63,6 +62,7 @@ class SNET:
 
             end = datetime.now()
             print("-" * 10 + f" Elapsed time: {(end-start).total_seconds()} [s] " + "-" * 10)
+            print([s.age for s in self._speciess])
 
             if best_organism.fitness > Configuration.success_fitness:
                 break
@@ -71,7 +71,6 @@ class SNET:
 
     def _remove_lowest_ranking_species(self):
         self._speciess.sort(key=lambda s: s.fitness, reverse=True)
-        print([s.fitness for s in self._speciess])
         self._speciess = self._speciess[:Configuration.number_of_species]
 
     def _get_best_organism(self):

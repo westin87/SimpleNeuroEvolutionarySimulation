@@ -22,7 +22,7 @@ from snes.trainer.configuration import Configuration
 class Brain:
     def __init__(self, number_of_inputs, number_of_outputs):
         self._axons = list()
-        self._thought = 0;
+        self._thought = 0
         self.input_neurons = [InputNeuron() for _ in range(number_of_inputs)]
         self.hidden_neurons = [HiddenNeuron()]
         self.output_neurons = [OutputNeuron() for _ in range(number_of_outputs)]
@@ -41,25 +41,26 @@ class Brain:
         return output_values
 
     def mutate(self):
-        mutation = self._get_random_mutation()
+        for _ in range(choice(Configuration.number_of_mutations_per_iteration)):
+            mutation = self._get_random_mutation()
 
-        if mutation == Mutation.NewNeuron:
-            number_of_neurons = choice(
-                Configuration.number_of_new_neurons_in_mutation,
-                p=Configuration.probability_for_new_neurons)
-            self._add_neurons(number_of_neurons)
+            if mutation == Mutation.NewNeuron:
+                number_of_neurons = choice(
+                    Configuration.number_of_new_neurons_in_mutation,
+                    p=Configuration.probability_for_new_neurons)
+                self._add_neurons(number_of_neurons)
 
-        elif mutation == Mutation.NewAxon:
-            number_of_axons = choice(
-                Configuration.number_of_new_axons_in_mutation,
-                p=Configuration.probability_for_new_axons)
-            self._add_axons(number_of_axons)
+            elif mutation == Mutation.NewAxon:
+                number_of_axons = choice(
+                    Configuration.number_of_new_axons_in_mutation,
+                    p=Configuration.probability_for_new_axons)
+                self._add_axons(number_of_axons)
 
-        elif mutation == Mutation.IncreasedAxonInfluence:
-            self._increase_influence_of_random_axon()
+            elif mutation == Mutation.IncreasedAxonInfluence:
+                self._increase_influence_of_random_axon()
 
-        elif mutation == Mutation.ChangeAxonActivity:
-            self._change_influence_of_random_neuron()
+            elif mutation == Mutation.ChangeAxonActivity:
+                self._change_influence_of_random_neuron()
 
     def get_all_neurons(self) -> List[Neuron]:
         return self.input_neurons + self.hidden_neurons + self.output_neurons
