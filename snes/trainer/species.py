@@ -22,7 +22,7 @@ class Species:
 
         self._remove_poorest_organisms()
 
-        self._organisms += self._create_new_organisms_from(self._organisms[0])
+        self._organisms += self._create_new_organisms_from(self.get_best_organism())
 
         new_species = list()
         for organism in self._organisms[3:]:
@@ -38,6 +38,7 @@ class Species:
             return new_species
 
     def get_best_organism(self):
+        self._organisms.sort(key=lambda o: o.fitness, reverse=True)
         return self._organisms[0]
 
     def _remove_poorest_organisms(self):

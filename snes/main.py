@@ -1,6 +1,8 @@
-#from game.game import Game
+from matplotlib import pyplot as plt
+
+from snes.game.game import Game
 from snes.trainer.snet import SNET
-from snake_game.game import Game
+# from snake_game.game import Game
 
 
 snet = SNET(Game())
@@ -10,3 +12,5 @@ if organism:
     print(f"Final organism: {organism}")
     organism.save()
     organism.plot_brain()
+    organism.plot_historical_fitness()
+    plt.show()

@@ -1,13 +1,12 @@
 from snes.neural_network.axon import Axon
 from snes.neural_network.neuron import Neuron
-from snes.tools.point import Point
 
 
 class InputNeuron(Neuron):
     def __init__(self):
+        super().__init__()
         self.value = 0
         self.outgoing_axons = list()
-        self.position = Point(0, 0)
 
     def action_potential(self, thought=None):
         return self.value
@@ -17,3 +16,10 @@ class InputNeuron(Neuron):
             raise ValueError("Can not connect a input neuron to another input neuron.")
 
         return Axon.create_connection(self, neuron)
+
+    def is_connected_upstream(self, neuron):
+        return False
+
+    def is_connected_downstream(self, neuron):
+        connected_neurons = [axon.outgoing_neuron for axon in self.outgoing_axons]
+        return neuron in connected_neurons

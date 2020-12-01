@@ -1,8 +1,8 @@
 from numpy.random import choice
 
-from snes.game import Map
+from snes.game.map import Map
 from snes.tools.point import Point
-from snes.trainer import Task
+from snes.trainer.task import Task
 
 
 class Game(Task):
@@ -41,8 +41,10 @@ class Game(Task):
 
         self.player += self.direction
 
-        if self.ticks > 1000 or self._not_on_map(self.player):
+        if self.ticks > 10000 or self._not_on_map(self.player):
             self._player_is_alive = False
+
+        # print(self.get_map())
 
     def set_input(self, inputs):
         if inputs[0] > 0.5:

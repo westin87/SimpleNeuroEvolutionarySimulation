@@ -1,5 +1,7 @@
 import numpy as np
 
+from matplotlib import pyplot as plt
+
 from snes.neural_network.brain import Brain
 from snes.tools.math_helpers import relative_difference_of
 from snes.trainer.task import Task
@@ -10,7 +12,7 @@ class Organism:
         self.age = 0
         self._task: Task = task.create()
         self._brain = brain
-        self._historical_fitness = [0]
+        self._historical_fitness = []
 
     def evaluate(self):
         self.age += 1
@@ -32,7 +34,9 @@ class Organism:
 
     @property
     def fitness(self):
-        return int(np.mean(self._historical_fitness[-10:]))
+        if (self._historical_fitness):
+            return int(np.mean(self._historical_fitness[-10:]))
+        return 0
 
     def set_fitness(self, fitness):
         self._historical_fitness = [fitness]
@@ -56,7 +60,12 @@ class Organism:
     def plot_brain(self):
         self._brain.plot()
 
+    def plot_historical_fitness(self):
+        plt.figure()
+        plt.plot(self._historical_fitness)
+
     def save(self):
+        print("Saving organism")
         self._brain.save()
 
     @classmethod
@@ -65,4 +74,4 @@ class Organism:
         return Organism(task, brain)
 
     def __str__(self):
-        return f"F: {self.fitness}, N: {self._brain.number_of_neurons}, A: {self._brain.number_of_axons}"
+        return f"F: {self.fitness}, Age: {self.age}, #N: {self._brain.number_of_neurons}, #A: {self._brain.number_of_axons}"

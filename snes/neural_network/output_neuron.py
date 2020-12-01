@@ -8,8 +8,8 @@ from snes.tools.point import Point
 
 class OutputNeuron(Neuron):
     def __init__(self):
+        super().__init__()
         self.incoming_axons = list()
-        self.position = Point(0, 0)
         self._action_potential = None
         self._last_thought = None
 
@@ -26,3 +26,13 @@ class OutputNeuron(Neuron):
             raise ValueError("Can not connect a output neuron to another output neuron.")
 
         return Axon.create_connection(neuron, self)
+
+    def is_connected_upstream(self, neuron):
+        connected_neurons = [axon.incoming_neuron for axon in self.incoming_axons]
+        return neuron in connected_neurons
+
+    def is_connected_downstream(self, neuron):
+        return False
+
+
+

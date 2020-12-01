@@ -24,3 +24,10 @@ class Axon:
 
     def action_potential(self, thought=None):
         return self.weight * self.incoming_neuron.action_potential(thought)
+
+    def __eq__(self, other):
+        return (self.incoming_neuron == other.incoming_neuron and self.outgoing_neuron == other.outgoing_neuron or
+                self.incoming_neuron == other.outgoing_neuron and self.outgoing_neuron == other.incoming_neuron)
+
+    def __hash__(self):
+        return hash(self.incoming_neuron) + hash(self.outgoing_neuron)

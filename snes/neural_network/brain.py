@@ -78,21 +78,25 @@ class Brain:
         for i, n in enumerate(self.output_neurons):
             n.position += Point(10, 5*i)
 
-        x = [n.position.x for n in self.get_all_neurons()]
-        y = [n.position.y for n in self.get_all_neurons()]
+        all_neurons = self.get_all_neurons()
+        x = [n.position.x for n in all_neurons]
+        y = [n.position.y for n in all_neurons]
 
         plt.figure()
         plt.plot(x, y, 'o')
+
         for axon in self._axons:
             x = [axon.incoming_neuron.position.x,
                  axon.outgoing_neuron.position.x]
             y = [axon.incoming_neuron.position.y,
                  axon.outgoing_neuron.position.y]
             plt.plot(x, y)
-
-        plt.show()
+            x = axon.incoming_neuron.position.x + (axon.outgoing_neuron.position.x-axon.incoming_neuron.position.x)/2
+            y = axon.incoming_neuron.position.y + (axon.outgoing_neuron.position.y-axon.incoming_neuron.position.y)/2
+            plt.text(x, y, f"{axon.weight:.3f}")
 
     def save(self):
+        self._remove_unused_neurons()
         path = Path(f"brain_{datetime.now().isoformat(timespec='seconds')}.bin")
         with path.open('wb') as fo:
             pickle.dump(self, fo)
@@ -105,41 +109,66 @@ class Brain:
         with path.open('rb') as fo:
             return pickle.load(fo)
 
+    def _add_neurons(self, number_of_neurons):
+        for _ in range(number_of_neurons):
+            self._add_neuron()
+
     def _add_neuron(self):
         self.number_of_neurons += 1
         neuron = HiddenNeuron()
         self.hidden_neurons.append(neuron)
 
-    def _add_neurons(self, number_of_neurons):
-        for _ in range(number_of_neurons):
-            self._add_neuron()
+    def _add_axons(self, number_of_axons):
+        for _ in range(number_of_axons):
+            self._add_axon()
 
     def _add_axon(self):
-        self.number_of_axons += 1
-
         neuron = self._get_any_neuron()
 
         if isinstance(neuron, InputNeuron):
             random_neuron = self._get_any_non_input_neuron()
-
+            emergency_break = 0
+            while neuron.is_connected_downstream(random_neuron):
+                random_neuron = self._get_any_non_input_neuron()
+                emergency_break += 1
+                if emergency_break > 1000:
+                    return
         elif isinstance(neuron, HiddenNeuron):
             random_neuron = self._get_any_neuron()
-            while neuron.is_connected_up_stream(random_neuron):
+            emergency_break = 0
+            while neuron.is_connected(random_neuron):
                 random_neuron = self._get_any_neuron()
-
+                emergency_break += 1
+                if emergency_break > 1000:
+                    return
         elif isinstance(neuron, OutputNeuron):
             random_neuron = self._get_any_non_output_neuron()
+            emergency_break = 0
+            while neuron.is_connected_upstream(random_neuron):
+                random_neuron = self._get_any_non_output_neuron()
+                emergency_break += 1
+                if emergency_break > 1000:
+                    return
         else:
-            raise ValueError(f"Unknown neuron type trying to connect: "
-                             f"'{type(neuron)}'")
+            return
 
+        self.number_of_axons += 1
         self._axons.append(neuron.add_connection_to(random_neuron))
 
-        return random_neuron
+    def _add_axon_tmp(self):
+        neuron = self._get_any_hidden_neuron()
+        random_neuron = self._get_any_neuron()
 
-    def _add_axons(self, number_of_axons):
-        for _ in range(number_of_axons):
-            self._add_axon()
+        emergency_break = 0
+
+        while (Axon(neuron, random_neuron, 0) in self._axons) or neuron.is_connected(random_neuron):
+            random_neuron = self._get_any_neuron()
+            emergency_break += 1
+            if emergency_break > 1000:
+                return
+
+        self.number_of_axons += 1
+        self._axons.append(neuron.add_connection_to(random_neuron))
 
     def _increase_influence_of_random_axon(self):
         axon = self._get_any_axon()
@@ -160,11 +189,18 @@ class Brain:
     def _get_any_neuron(self) -> Neuron:
         return choice(self.get_all_neurons())
 
+    def _get_any_hidden_neuron(self) -> HiddenNeuron:
+        return choice(self.hidden_neurons)
+
     def _get_any_non_input_neuron(self) -> Neuron:
         return choice(self.hidden_neurons + self.output_neurons)
 
     def _get_any_non_output_neuron(self) -> Neuron:
         return choice(self.input_neurons + self.hidden_neurons)
+
+    def _remove_unused_neurons(self):
+        print(f"Removing {len([n for n in self.hidden_neurons if not n.is_used()])} unused neurons")
+        self.hidden_neurons = [n for n in self.hidden_neurons if n.is_used()]
 
     def _get_random_mutation(self):
         mutation_list = [
@@ -173,7 +209,7 @@ class Brain:
             Mutation.IncreasedAxonInfluence,
             Mutation.ChangeAxonActivity]
 
-        return choice(mutation_list, p=[0.05, 0.1, 0.65, 0.2])
+        return choice(mutation_list, p=Configuration.probability_for_mutation_type)
 
 
 class Mutation(Enum):

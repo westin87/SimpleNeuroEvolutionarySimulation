@@ -1,17 +1,18 @@
 import numpy as np
+from numpy.random import randn
 
 from snes.neural_network.axon import Axon
 from snes.neural_network.input_neuron import InputNeuron
 from snes.neural_network.neuron import Neuron
+from snes.neural_network.output_neuron import OutputNeuron
 from snes.tools.math_helpers import sigmoid
-from snes.tools.point import Point
 
 
 class HiddenNeuron(Neuron):
     def __init__(self):
+        super().__init__()
         self.incoming_axons = list()
         self.outgoing_axons = list()
-        self.position = Point(0, 0)
         self._action_potential = None
         self._last_thought = None
 
@@ -27,18 +28,40 @@ class HiddenNeuron(Neuron):
     def add_connection_to(self, neuron: Neuron):
         if isinstance(neuron, InputNeuron):
             return Axon.create_connection(neuron, self)
-        else:
+        elif isinstance(neuron, OutputNeuron):
             return Axon.create_connection(self, neuron)
+        else:
+            if randn() > 0.5:
+                return Axon.create_connection(neuron, self)
+            else:
+                return Axon.create_connection(self, neuron)
 
-    def is_connected_up_stream(self, neuron):
-        hidden_neurons = [axon.incoming_neuron for axon in self.incoming_axons if isinstance(axon.incoming_neuron, HiddenNeuron)]
+    def is_connected(self, neuron):
+        return self.is_connected_upstream(neuron) or self.is_connected_downstream(neuron)
+
+    def is_connected_upstream(self, neuron):
         if neuron is self:
             return True
-        elif not hidden_neurons:
-            return False
-        else:
-            output = list()
-            for hidden_neuron in hidden_neurons:
-                output.append(hidden_neuron.is_connected_up_stream(neuron))
 
-            return np.any(output)
+        upstream_neurons = [axon.incoming_neuron for axon in self.incoming_axons]
+
+        output = list()
+        for connected_neuron in upstream_neurons:
+            output.append(connected_neuron.is_connected_upstream(neuron))
+
+        return np.any(output)
+
+    def is_connected_downstream(self, neuron):
+        if neuron is self:
+            return True
+
+        downstream_neurons = [axon.outgoing_neuron for axon in self.outgoing_axons]
+
+        output = list()
+        for connected_neuron in downstream_neurons:
+            output.append(connected_neuron.is_connected_downstream(neuron))
+
+        return np.any(output)
+
+    def is_used(self):
+        return bool(self.incoming_axons and self.outgoing_axons)
