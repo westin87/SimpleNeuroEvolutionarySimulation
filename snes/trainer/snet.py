@@ -54,7 +54,7 @@ class SNET:
             self._remove_lowest_ranking_species()
 
             best_organism = self._get_best_organism()
-            # best_organism.plot_brain()
+            
             print(f"Current best organism: {best_organism}")
             print(f"Number of species in next iteration: {len(self._speciess)}")
             print(f"Species ages: {[s.age for s in self._speciess]}")

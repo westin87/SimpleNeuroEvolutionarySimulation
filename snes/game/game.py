@@ -1,4 +1,5 @@
 from numpy.random import choice
+from matplotlib import pyplot as plt
 
 from snes.game.map import Map
 from snes.tools.point import Point
@@ -19,18 +20,22 @@ class Game(Task):
         return cls()
 
     def __init__(self):
-        self.start()
+        pass
 
-    def start(self):
+    def start(self, draw=False):
         self.map = Map((10, 10))
         self.player = Point(4, 4)
         self.movement = Point(0, 0)
         self.ticks = 0
         self.direction = Point(0, 1)
         self._player_is_alive = True
+        self._draw = draw
+
+        if self._draw:
+            plt.figure()
+            self._im = plt.imshow(self.get_map())
 
     def tick(self):
-        # print(".", end='', flush=True)
         self.ticks += 1
 
         self.player += self.movement
@@ -44,7 +49,9 @@ class Game(Task):
         if self.ticks > 10000 or self._not_on_map(self.player):
             self._player_is_alive = False
 
-        # print(self.get_map())
+        if self._draw:
+            self._im.set_data(self.get_map())
+            plt.pause(0.001)
 
     def set_input(self, inputs):
         if inputs[0] > 0.5:

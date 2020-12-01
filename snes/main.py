@@ -12,5 +12,4 @@ if organism:
     print(f"Final organism: {organism}")
     organism.save()
     organism.plot_brain()
-    organism.plot_historical_fitness()
     plt.show()

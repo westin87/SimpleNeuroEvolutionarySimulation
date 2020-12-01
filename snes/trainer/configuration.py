@@ -5,7 +5,7 @@ class Configuration:
     max_number_of_generations = 1000  # This is to stop thing for going on forever and ever...
     success_fitness = 5000  # If an organism achieves this fitness the training end and the organism id returned, this has to be adapted to fit the game score.
 
-    number_organisms_per_specie = 60
+    number_organisms_per_specie = 40
     number_of_species = 20
 
     number_of_mutations_per_iteration = [1, 2, 4, 8, 16]
